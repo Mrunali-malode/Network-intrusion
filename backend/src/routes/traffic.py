@@ -6,13 +6,25 @@ from src.services.drift_engine import calculate_drift_metrics
 
 router = APIRouter()
 
+ATTACK_IPS_SET = {
+    "185.220.101.5", "185.220.101.44", "185.220.102.78", "45.83.223.12",
+    "45.83.223.99", "103.21.244.15", "103.21.244.201", "194.26.29.11"
+}
+
 
 @router.post("/traffic")
 async def receive_traffic(event: TrafficEvent):
-    # If baseline is empty or filling initial window (< 100 items), add clean requests to baseline
-    if len(baseline_events) < 100:
-        # Avoid putting high-depth attack paths into clean baseline
-        if event.path_depth <= 3 and "admin" not in event.path and "env" not in event.path:
+    # If baseline window is not fully populated (< 300 items), add clean requests
+    if len(baseline_events) < 300:
+        # Strict clean traffic check for baseline candidates
+        is_clean = (
+            event.ip not in ATTACK_IPS_SET and
+            event.path_depth <= 3 and
+            event.method == "GET" and
+            not any(kw in event.path for kw in ["admin", "env", "debug", "bypass", "phpmyadmin", "config", "exec"]) and
+            not any(ua in event.user_agent.lower() for ua in ["sqlmap", "nikto", "nmap", "go-http-client"])
+        )
+        if is_clean:
             baseline_events.append(event)
 
     traffic_events.append(event)

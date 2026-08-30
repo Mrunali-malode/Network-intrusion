@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DriftData } from "@/hooks/useSocket";
-import { AlertTriangle, CheckCircle2, Flame, Gauge, Info, Layers, HelpCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Flame, Gauge, Info, Layers, ChevronDown, ChevronUp, Calculator, Activity, ShieldCheck, ShieldAlert } from "lucide-react";
 import InfoModal, { ModalInfoContent } from "@/components/InfoModal";
 
 interface DriftCardProps {
@@ -10,30 +10,91 @@ interface DriftCardProps {
 }
 
 export default function DriftCard({ drift }: DriftCardProps) {
-  const { status, drift_detected, overall_drift_score, techniques, features } = drift;
+  const { status, drift_detected, overall_drift_score, techniques, features, debug } = drift;
   const [activeModalContent, setActiveModalContent] = useState<ModalInfoContent | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
 
-  const getStatusBadge = () => {
+  const getStatusBanner = () => {
     switch (status) {
       case "CRITICAL":
         return (
-          <div className="flex items-center gap-2 rounded-full bg-rose-500/20 px-3 py-1 text-rose-400 border border-rose-500/40 text-xs font-bold animate-pulse">
-            <Flame className="h-4 w-4 text-rose-400" />
-            <span>CRITICAL DRIFT DETECTED</span>
+          <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-rose-950/80 via-rose-900/40 to-slate-950 p-4 border border-rose-500/50 shadow-lg shadow-rose-500/10">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-rose-500/20 p-2.5 border border-rose-500/40 text-rose-400 animate-pulse">
+                <Flame className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-rose-400 tracking-wider uppercase font-mono">
+                    THREAT STATUS: CRITICAL
+                  </span>
+                  <span className="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-extrabold text-rose-300 border border-rose-500/30">
+                    SCORE &gt; 60%
+                  </span>
+                </div>
+                <p className="text-xs text-rose-200/80 mt-0.5">
+                  High probability cyber attack or major statistical traffic divergence detected. Immediate SOC mitigation required.
+                </p>
+              </div>
+            </div>
+            <div className="hidden sm:block text-right font-mono">
+              <div className="text-2xl font-black text-rose-400">{overall_drift_score.toFixed(1)}%</div>
+              <div className="text-[10px] text-rose-300 uppercase tracking-widest">CRITICAL DRIFT</div>
+            </div>
           </div>
         );
       case "WARNING":
         return (
-          <div className="flex items-center gap-2 rounded-full bg-amber-500/20 px-3 py-1 text-amber-400 border border-amber-500/40 text-xs font-bold">
-            <AlertTriangle className="h-4 w-4 text-amber-400" />
-            <span>DISTRIBUTION SHIFT WARNING</span>
+          <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-amber-950/80 via-amber-900/40 to-slate-950 p-4 border border-amber-500/50 shadow-lg shadow-amber-500/10">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-amber-500/20 p-2.5 border border-amber-500/40 text-amber-400">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-amber-400 tracking-wider uppercase font-mono">
+                    THREAT STATUS: WARNING
+                  </span>
+                  <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-500/30">
+                    20% - 60% DRIFT
+                  </span>
+                </div>
+                <p className="text-xs text-amber-200/80 mt-0.5">
+                  Moderate distribution shift detected in API endpoint patterns or IP velocities. Monitoring active traffic stream.
+                </p>
+              </div>
+            </div>
+            <div className="hidden sm:block text-right font-mono">
+              <div className="text-2xl font-black text-amber-400">{overall_drift_score.toFixed(1)}%</div>
+              <div className="text-[10px] text-amber-300 uppercase tracking-widest">MODERATE DRIFT</div>
+            </div>
           </div>
         );
       default:
         return (
-          <div className="flex items-center gap-2 rounded-full bg-emerald-500/20 px-3 py-1 text-emerald-400 border border-emerald-500/40 text-xs font-bold">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            <span>DISTRIBUTION STABLE (NORMAL)</span>
+          <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-emerald-950/60 via-slate-900/60 to-slate-950 p-4 border border-emerald-500/30 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-emerald-500/20 p-2.5 border border-emerald-500/40 text-emerald-400">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-emerald-400 tracking-wider uppercase font-mono">
+                    THREAT STATUS: NORMAL
+                  </span>
+                  <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-300 border border-emerald-500/30">
+                    SCORE 0% - 20%
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Incoming telemetry matches legitimate baseline user browsing behavior. Statistical hypothesis distributions are stable.
+                </p>
+              </div>
+            </div>
+            <div className="hidden sm:block text-right font-mono">
+              <div className="text-2xl font-black text-emerald-400">{overall_drift_score.toFixed(1)}%</div>
+              <div className="text-[10px] text-emerald-400 uppercase tracking-widest">STABLE TRAFFIC</div>
+            </div>
           </div>
         );
     }
@@ -41,103 +102,86 @@ export default function DriftCard({ drift }: DriftCardProps) {
 
   const modalInfos: Record<string, ModalInfoContent> = {
     overall: {
-      title: "Statistical Concept Drift Sentinel",
-      category: "ML Monitoring",
+      title: "Network Intrusion Concept Drift Sentinel",
+      category: "ML Concept Drift Engine",
       badge: status,
       badgeColor: status === "CRITICAL" ? "rose" : status === "WARNING" ? "amber" : "emerald",
       summary:
-        "Concept drift occurs when the statistical properties of incoming traffic change over time. When botnets, scrapers, or DDoS attacks hit the server, distribution features (RPS, IP frequencies, method ratios) shift away from historical baseline behavior.",
+        "Statistical concept drift occurs when incoming live telemetry distribution diverges from historical clean baseline behavior. The engine aggregates 4 calibrated ML hypothesis techniques.",
       keyPoints: [
-        "Composite Drift Score: Aggregates Kolmogorov-Smirnov, PSI, Wasserstein Distance, and Z-Score into a unified 0-100% risk index.",
-        "Baseline Window: The ML backend compares current live streaming traffic against the established clean baseline distribution.",
-        "Automatic Alerts: Status escalates from STABLE -> WARNING -> CRITICAL as distribution deviation increases."
+        "1. Population Stability Index (30% Weight): Measures path, method, and threat-IP class frequency shifts with Laplace smoothing.",
+        "2. Kolmogorov-Smirnov Test (25% Weight): 2-sample continuous feature test evaluating ECDF differences (D > 0.35, p < 0.001).",
+        "3. Wasserstein Distance / EMD (25% Weight): Earth Mover's Distance across normalized feature geometry.",
+        "4. Z-Score Anomaly (20% Weight): 3-Sigma statistical shift in request rates and payload depth."
       ],
       normalVsAnomaly: {
-        normal: "Composite Drift Score < 25%. Traffic pattern matches expected user browsing behavior.",
-        anomaly: "Composite Drift Score >= 50%. High statistical divergence caused by automated scripts, attacks, or unexpected traffic bursts."
+        normal: "Score 0 - 20%. Standard browsing behavior across typical endpoints.",
+        anomaly: "Score 20 - 60% (WARNING) or 60 - 100% (CRITICAL). Automated attack tools, scrapers, or DDoS botnets."
       },
-      howToTest: "Click 'Volumetric Botnet Attack' in the Traffic Simulator panel to see the composite drift index spike and turn CRITICAL!"
+      howToTest: "Trigger 'Volumetric Botnet Attack' in the Traffic Simulator to observe real-time score escalation!"
     },
     ks_test: {
       title: "Kolmogorov-Smirnov Test (KS-Test)",
       category: "Continuous Distribution Hypothesis Test",
-      badge: techniques.ks_test.drift ? "DRIFT DETECTED" : "PASSED",
+      badge: techniques.ks_test.drift ? "DRIFT DETECTED" : "STABLE",
       badgeColor: techniques.ks_test.drift ? "rose" : "emerald",
       summary:
-        "The Kolmogorov-Smirnov test is a non-parametric statistical hypothesis test that compares the cumulative distribution functions (CDF) of two sample sets to decide if they come from the same underlying probability distribution.",
-      formula: "p-value < 0.05 => Reject Null Hypothesis (Statistical Drift Confirmed)",
+        "Evaluates maximum empirical cumulative distribution function (ECDF) distance (D-statistic) between baseline numerical features and current streaming traffic window.",
+      formula: "Reject H0 if D > 0.35 and p-value < 0.001",
       keyPoints: [
-        "D-statistic: Measures the maximum distance between the baseline cumulative distribution and current telemetry distribution.",
-        "p-value: Probabilistic metric. A p-value below 0.05 indicates with 95%+ confidence that incoming traffic is statistically different from normal."
+        "D-statistic: Maximum vertical distance between cumulative probability curves.",
+        "p-value: Probability that observed distribution difference occurred by random chance."
       ],
-      normalVsAnomaly: {
-        normal: "p-value >= 0.05 (High similarity, no distribution shift).",
-        anomaly: "p-value < 0.05 (Statistically significant shift detected in numerical features like RPS or payload size)."
-      },
-      howToTest: "Trigger the 'Gradual Concept Drift' or 'Volumetric Botnet Attack' simulation to drop the p-value below 0.05."
+      howToTest: "Run a spike attack to shift payload content length or query parameter distributions."
     },
     psi: {
       title: "Population Stability Index (PSI)",
-      category: "Categorical Shift & Binning Metric",
+      category: "Categorical Frequency Shift Metric",
       badge: techniques.psi.status,
       badgeColor: techniques.psi.drift ? "rose" : "emerald",
       summary:
-        "PSI measures how much a categorical distribution (e.g. HTTP Methods like GET/POST/PUT, HTTP status codes, or User Agent types) has shifted relative to baseline distribution bins.",
+        "Calculates categorical stability across HTTP paths, HTTP methods (GET/POST), and IP Threat Classes using Laplace smoothing.",
       formula: "PSI = Σ (Actual% - Expected%) × ln(Actual% / Expected%)",
       keyPoints: [
-        "PSI < 0.10: No significant distribution change (Stable).",
-        "0.10 <= PSI < 0.25: Moderate distribution shift (Warning).",
-        "PSI >= 0.25: Significant population shift (Severe Drift Alert)."
+        "PSI < 0.10: Stable distribution (0-15 score).",
+        "0.10 <= PSI < 0.25: Moderate population shift (15-60 score).",
+        "PSI >= 0.25: Severe distribution drift (60-100 score)."
       ],
-      normalVsAnomaly: {
-        normal: "PSI score < 0.10. Proportion of GET vs POST requests matches baseline.",
-        anomaly: "PSI score >= 0.25. High influx of POST/PUT requests or unexpected endpoint flooding."
-      },
-      howToTest: "Inject custom requests with unusual paths or high POST counts to watch PSI rise above 0.25."
+      howToTest: "Inject custom requests with malicious paths like '/admin/config.json' to trigger PSI shift."
     },
     wasserstein: {
       title: "Wasserstein Distance (Earth Mover's Distance)",
-      category: "Distribution Distance Metric",
+      category: "Feature Geometry Distance",
       badge: techniques.wasserstein.drift ? "HIGH DISTANCE" : "NORMAL",
       badgeColor: techniques.wasserstein.drift ? "amber" : "emerald",
       summary:
-        "Earth Mover's Distance (EMD) computes the minimal 'work' needed to transform one probability distribution into another. It provides a geometric measure of traffic drift.",
+        "Computes minimal work required to transform current feature distribution geometry into the reference baseline distribution.",
       formula: "EMD = ∫ |F_baseline(x) - F_current(x)| dx",
       keyPoints: [
-        "Continuous Geometry: Unlike binning tests, EMD accounts for the shape and distance of distribution shifts.",
-        "Higher Values = Larger Divergence: A higher distance indicates severe structural divergence in incoming telemetry parameters."
-      ],
-      normalVsAnomaly: {
-        normal: "Low distance score (~0.0 to 0.5). Minimal work needed to align distributions.",
-        anomaly: "High distance score (> 1.5). Structural shift in request features."
-      },
-      howToTest: "Simulate a high-volume request spike to alter the shape of the continuous throughput density curve."
+        "Feature Normalization: Path depth, query param count, and content length are z-normalized before EMD computation.",
+        "Smooth Continuity: Provides geometric drift distance even when distributions do not overlap."
+      ]
     },
     z_score: {
       title: "Z-Score Throughput Anomaly",
-      category: "Statistical Rate Standard Deviation",
+      category: "3-Sigma Rate Standard Deviation",
       badge: techniques.z_score.drift ? "ANOMALY" : "STABLE",
       badgeColor: techniques.z_score.drift ? "rose" : "emerald",
       summary:
-        "Z-Score measures how many standard deviations (|Z|) current incoming Requests Per Second (RPS) deviate from historical baseline moving average.",
-      formula: "Z = (Current_RPS - Mean_RPS) / Standard_Deviation_RPS",
+        "Measures standard deviation variance (|Z|) of incoming Requests Per Second (RPS) and path depths against moving baseline average.",
+      formula: "Z = |Current_Value - Mean_Baseline| / Standard_Deviation_Baseline",
       keyPoints: [
-        "|Z| <= 2.0: Within expected standard variance.",
-        "|Z| > 2.5: Statistically anomalous spike (Volumetric attack or sudden traffic surge)."
-      ],
-      normalVsAnomaly: {
-        normal: "|Z| score near 0. Throughput is consistent with average request rates.",
-        anomaly: "|Z| > 2.5. Extreme burst of traffic exceeding standard deviation limits."
-      },
-      howToTest: "Click 'Quick Telemetry Pulse' or run 'Volumetric Botnet Attack' to produce an immediate Z-Score spike."
+        "|Z| < 1.5: Within standard variance.",
+        "|Z| >= 3.0: 3-Sigma statistical anomaly (Volumetric DDoS or script burst)."
+      ]
     }
   };
 
   return (
     <>
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-xl shadow-xl">
-        {/* Header & Overall Status */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-5">
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur-xl shadow-xl space-y-6">
+        {/* Header & Title */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <Gauge className="h-5 w-5 text-cyan-400" />
@@ -146,137 +190,236 @@ export default function DriftCard({ drift }: DriftCardProps) {
                 <button
                   onClick={() => setActiveModalContent(modalInfos.overall)}
                   className="rounded-full p-1 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-all"
-                  title="Click to learn about Concept Drift Sentinel"
+                  title="Learn about Concept Drift Sentinel"
                 >
                   <Info className="h-4 w-4" />
                 </button>
               </h2>
             </div>
-            <p className="mt-1 text-xs text-slate-400">
-              Real-time multi-technique statistical hypothesis testing against historical baseline
+            <p className="mt-0.5 text-xs text-slate-400">
+              Calibrated multi-technique statistical hypothesis monitoring engine
             </p>
           </div>
 
-          <div>{getStatusBadge()}</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowDebug(!showDebug)}
+              className="flex items-center gap-1.5 rounded-lg bg-slate-950 border border-slate-800 px-3 py-1.5 text-xs font-semibold text-cyan-400 hover:bg-slate-800 transition-all"
+            >
+              <Calculator className="h-3.5 w-3.5" />
+              <span>{showDebug ? "Hide Math Debug" : "Show Math Debug"}</span>
+              {showDebug ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </button>
+          </div>
         </div>
 
-        {/* Overall Score Progress Bar */}
-        <div className="mt-6 rounded-xl bg-slate-950/80 p-4 border border-slate-800/80">
-          <div className="flex items-center justify-between text-xs mb-2">
+        {/* Threat Status Banner */}
+        {getStatusBanner()}
+
+        {/* Composite Drift Index Progress Gauge */}
+        <div className="rounded-xl bg-slate-950/80 p-5 border border-slate-800/80 space-y-3">
+          <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-              Composite Drift Index:
-              <button
-                onClick={() => setActiveModalContent(modalInfos.overall)}
-                className="text-slate-400 hover:text-cyan-400 transition-all"
-              >
-                <HelpCircle className="h-3.5 w-3.5" />
-              </button>
+              Composite Drift Score Gauge:
+              <span className="text-[11px] text-slate-500 font-normal">
+                (Normal: 0-20% | Warning: 20-60% | Critical: 60-100%)
+              </span>
             </span>
-            <span className={`font-mono text-sm font-bold ${overall_drift_score > 50 ? "text-rose-400" : overall_drift_score > 25 ? "text-amber-400" : "text-emerald-400"}`}>
+            <span
+              className={`font-mono text-base font-black ${
+                overall_drift_score > 60
+                  ? "text-rose-400"
+                  : overall_drift_score > 20
+                  ? "text-amber-400"
+                  : "text-emerald-400"
+              }`}
+            >
               {overall_drift_score.toFixed(1)}%
             </span>
           </div>
-          <div className="h-3 w-full overflow-hidden rounded-full bg-slate-800">
+
+          {/* Calibrated Bar */}
+          <div className="relative h-4 w-full overflow-hidden rounded-full bg-slate-900 border border-slate-800 p-0.5">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                overall_drift_score > 55
-                  ? "bg-gradient-to-r from-amber-500 to-rose-600 shadow-lg shadow-rose-500/50"
-                  : overall_drift_score > 25
-                  ? "bg-gradient-to-r from-cyan-500 to-amber-500"
-                  : "bg-gradient-to-r from-emerald-500 to-cyan-500"
+                overall_drift_score > 60
+                  ? "bg-gradient-to-r from-amber-500 via-rose-500 to-rose-600 shadow-lg shadow-rose-500/50"
+                  : overall_drift_score > 20
+                  ? "bg-gradient-to-r from-emerald-500 via-cyan-500 to-amber-500"
+                  : "bg-gradient-to-r from-emerald-600 to-emerald-400"
               }`}
-              style={{ width: `${Math.max(5, overall_drift_score)}%` }}
+              style={{ width: `${Math.max(4, overall_drift_score)}%` }}
             />
+          </div>
+
+          <div className="flex justify-between text-[10px] font-mono text-slate-500 pt-0.5">
+            <span>0% (CLEAN)</span>
+            <span>20% (WARNING THRESHOLD)</span>
+            <span>60% (CRITICAL THRESHOLD)</span>
+            <span>100% (SEVERE ATTACK)</span>
           </div>
         </div>
 
+        {/* Mathematical Debug Breakdown Card (Accordion) */}
+        {showDebug && debug && (
+          <div className="rounded-xl bg-slate-950/90 p-5 border border-cyan-500/30 space-y-3 font-mono text-xs animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span className="font-bold text-cyan-400 flex items-center gap-2">
+                <Calculator className="h-4 w-4" />
+                MATHEMATICAL DRIFT SCORE BREAKDOWN
+              </span>
+              <span className="text-[10px] text-slate-400">
+                Baseline: {debug.baseline_sample_count} ev | Current: {debug.current_sample_count} ev
+              </span>
+            </div>
+
+            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-[11px] text-slate-300">
+              <div className="text-slate-400 text-[10px] uppercase font-sans tracking-wider mb-1">Composite Formula:</div>
+              <code className="text-cyan-300 font-bold">{debug.formula_explanation}</code>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-4 pt-1">
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <div className="text-[10px] text-slate-400 font-sans">1. PSI (30% Weight)</div>
+                <div className="text-sm font-bold text-white mt-0.5">+{debug.psi_contribution.toFixed(1)} pts</div>
+                <div className="text-[10px] text-slate-500">Raw PSI: {debug.psi_raw.toFixed(4)}</div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <div className="text-[10px] text-slate-400 font-sans">2. KS-Test (25% Weight)</div>
+                <div className="text-sm font-bold text-white mt-0.5">+{debug.ks_contribution.toFixed(1)} pts</div>
+                <div className="text-[10px] text-slate-500">Max D-stat: {debug.ks_raw_d.toFixed(4)}</div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <div className="text-[10px] text-slate-400 font-sans">3. EMD (25% Weight)</div>
+                <div className="text-sm font-bold text-white mt-0.5">+{debug.wasserstein_contribution.toFixed(1)} pts</div>
+                <div className="text-[10px] text-slate-500">Norm Dist: {debug.wasserstein_raw_w.toFixed(4)}</div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                <div className="text-[10px] text-slate-400 font-sans">4. Z-Score (20% Weight)</div>
+                <div className="text-sm font-bold text-white mt-0.5">+{debug.z_score_contribution.toFixed(1)} pts</div>
+                <div className="text-[10px] text-slate-500">Max |Z|: {debug.z_score_raw_z.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 4 Statistical Techniques Cards */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* 1. KS-Test */}
-          <div className={`rounded-xl border p-4 transition-all relative group ${techniques.ks_test.drift ? "border-rose-500/50 bg-rose-950/20" : "border-slate-800 bg-slate-950/40"}`}>
+          <div
+            className={`rounded-xl border p-4 transition-all relative ${
+              techniques.ks_test.drift
+                ? "border-rose-500/50 bg-rose-950/20"
+                : "border-slate-800 bg-slate-950/40"
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1">
                 KS-Test
                 <button
                   onClick={() => setActiveModalContent(modalInfos.ks_test)}
-                  className="text-slate-400 hover:text-cyan-400 transition-all"
-                  title="Explain Kolmogorov-Smirnov Test"
+                  className="text-slate-400 hover:text-cyan-400"
                 >
                   <Info className="h-3.5 w-3.5" />
                 </button>
               </span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${techniques.ks_test.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"}`}>
-                {techniques.ks_test.drift ? "DRIFT" : "PASSED"}
+              <span
+                className={`rounded px-2 py-0.5 text-[10px] font-extrabold ${
+                  techniques.ks_test.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"
+                }`}
+              >
+                {techniques.ks_test.drift ? "DRIFT" : "STABLE"}
               </span>
             </div>
 
             <div className="mt-3 font-mono">
-              <div className="text-xl font-bold text-white">
-                p = {techniques.ks_test.p_value.toFixed(4)}
+              <div className="text-lg font-black text-white">
+                D = {techniques.ks_test.statistic.toFixed(4)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                D-stat: <span className="text-cyan-300">{techniques.ks_test.statistic}</span>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                p-value: <span className="text-cyan-300">{techniques.ks_test.p_value.toFixed(4)}</span>
               </div>
             </div>
             <p className="mt-2 text-[10px] text-slate-500 leading-tight">
-              {techniques.ks_test.description} (p &lt; 0.05 drift)
+              {techniques.ks_test.description}
             </p>
           </div>
 
           {/* 2. Population Stability Index (PSI) */}
-          <div className={`rounded-xl border p-4 transition-all relative group ${techniques.psi.drift ? "border-amber-500/50 bg-amber-950/20" : "border-slate-800 bg-slate-950/40"}`}>
+          <div
+            className={`rounded-xl border p-4 transition-all relative ${
+              techniques.psi.drift
+                ? "border-amber-500/50 bg-amber-950/20"
+                : "border-slate-800 bg-slate-950/40"
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1">
                 PSI (Categorical)
                 <button
                   onClick={() => setActiveModalContent(modalInfos.psi)}
-                  className="text-slate-400 hover:text-cyan-400 transition-all"
-                  title="Explain Population Stability Index"
+                  className="text-slate-400 hover:text-cyan-400"
                 >
                   <Info className="h-3.5 w-3.5" />
                 </button>
               </span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${techniques.psi.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"}`}>
+              <span
+                className={`rounded px-2 py-0.5 text-[10px] font-extrabold ${
+                  techniques.psi.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"
+                }`}
+              >
                 {techniques.psi.status}
               </span>
             </div>
 
             <div className="mt-3 font-mono">
-              <div className="text-xl font-bold text-white">
-                {techniques.psi.score.toFixed(3)}
+              <div className="text-lg font-black text-white">
+                {techniques.psi.score.toFixed(4)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                Shift: <span className="text-cyan-300">{techniques.psi.status}</span>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Status: <span className="text-cyan-300">{techniques.psi.status}</span>
               </div>
             </div>
             <p className="mt-2 text-[10px] text-slate-500 leading-tight">
-              {techniques.psi.description} (&ge; 0.25 severe)
+              {techniques.psi.description}
             </p>
           </div>
 
-          {/* 3. Wasserstein Distance */}
-          <div className={`rounded-xl border p-4 transition-all relative group ${techniques.wasserstein.drift ? "border-rose-500/50 bg-rose-950/20" : "border-slate-800 bg-slate-950/40"}`}>
+          {/* 3. Wasserstein Distance (EMD) */}
+          <div
+            className={`rounded-xl border p-4 transition-all relative ${
+              techniques.wasserstein.drift
+                ? "border-rose-500/50 bg-rose-950/20"
+                : "border-slate-800 bg-slate-950/40"
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1">
                 Wasserstein (EMD)
                 <button
                   onClick={() => setActiveModalContent(modalInfos.wasserstein)}
-                  className="text-slate-400 hover:text-cyan-400 transition-all"
-                  title="Explain Wasserstein Distance"
+                  className="text-slate-400 hover:text-cyan-400"
                 >
                   <Info className="h-3.5 w-3.5" />
                 </button>
               </span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${techniques.wasserstein.drift ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}`}>
-                {techniques.wasserstein.drift ? "HIGH DIST" : "NORMAL"}
+              <span
+                className={`rounded px-2 py-0.5 text-[10px] font-extrabold ${
+                  techniques.wasserstein.drift ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"
+                }`}
+              >
+                {techniques.wasserstein.drift ? "HIGH DIST" : "STABLE"}
               </span>
             </div>
 
             <div className="mt-3 font-mono">
-              <div className="text-xl font-bold text-white">
-                {techniques.wasserstein.distance.toFixed(3)}
+              <div className="text-lg font-black text-white">
+                {techniques.wasserstein.distance.toFixed(4)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
+              <div className="text-[11px] text-slate-400 mt-0.5">
                 Earth Mover Distance
               </div>
             </div>
@@ -286,29 +429,38 @@ export default function DriftCard({ drift }: DriftCardProps) {
           </div>
 
           {/* 4. Z-Score Anomaly */}
-          <div className={`rounded-xl border p-4 transition-all relative group ${techniques.z_score.drift ? "border-rose-500/50 bg-rose-950/20" : "border-slate-800 bg-slate-950/40"}`}>
+          <div
+            className={`rounded-xl border p-4 transition-all relative ${
+              techniques.z_score.drift
+                ? "border-rose-500/50 bg-rose-950/20"
+                : "border-slate-800 bg-slate-950/40"
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-                Z-Score Rate
+              <span className="text-xs font-bold text-slate-200 flex items-center gap-1">
+                Z-Score Anomaly
                 <button
                   onClick={() => setActiveModalContent(modalInfos.z_score)}
-                  className="text-slate-400 hover:text-cyan-400 transition-all"
-                  title="Explain Z-Score Anomaly"
+                  className="text-slate-400 hover:text-cyan-400"
                 >
                   <Info className="h-3.5 w-3.5" />
                 </button>
               </span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${techniques.z_score.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"}`}>
+              <span
+                className={`rounded px-2 py-0.5 text-[10px] font-extrabold ${
+                  techniques.z_score.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"
+                }`}
+              >
                 {techniques.z_score.drift ? "ANOMALY" : "STABLE"}
               </span>
             </div>
 
             <div className="mt-3 font-mono">
-              <div className="text-xl font-bold text-white">
+              <div className="text-lg font-black text-white">
                 Z = {techniques.z_score.score.toFixed(2)}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
-                Variance: <span className="text-cyan-300">|Z| &gt; 2.5</span>
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Variance: <span className="text-cyan-300">|Z| &ge; 3.0</span>
               </div>
             </div>
             <p className="mt-2 text-[10px] text-slate-500 leading-tight">
@@ -319,21 +471,29 @@ export default function DriftCard({ drift }: DriftCardProps) {
 
         {/* Feature Shift Comparison Table */}
         {features && features.length > 0 && (
-          <div className="mt-6 border-t border-slate-800/80 pt-4">
+          <div className="border-t border-slate-800/80 pt-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
               <Layers className="h-3.5 w-3.5 text-cyan-400" />
               Feature-Level Shift Diagnostics
             </h3>
             <div className="grid gap-3 sm:grid-cols-3">
               {features.map((feat, idx) => (
-                <div key={idx} className="flex items-center justify-between rounded-lg bg-slate-950/60 p-3 border border-slate-800/60 text-xs">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between rounded-lg bg-slate-950/60 p-3 border border-slate-800/60 text-xs"
+                >
                   <div>
                     <div className="font-semibold text-slate-200">{feat.name}</div>
                     <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
-                      Base: <span className="text-slate-300">{feat.baseline_avg}</span> | Curr: <span className="text-cyan-300">{feat.current_avg}</span>
+                      Base: <span className="text-slate-300">{feat.baseline_avg}</span> | Curr:{" "}
+                      <span className="text-cyan-300">{feat.current_avg}</span>
                     </div>
                   </div>
-                  <span className={`rounded px-2 py-0.5 text-[10px] font-bold ${feat.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"}`}>
+                  <span
+                    className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                      feat.drift ? "bg-rose-500/20 text-rose-400" : "bg-emerald-500/20 text-emerald-400"
+                    }`}
+                  >
                     {feat.drift ? "SHIFT" : "OK"}
                   </span>
                 </div>
@@ -351,4 +511,3 @@ export default function DriftCard({ drift }: DriftCardProps) {
     </>
   );
 }
-

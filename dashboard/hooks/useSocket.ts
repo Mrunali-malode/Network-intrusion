@@ -12,6 +12,7 @@ export interface DriftData {
       statistic: number;
       p_value: number;
       drift: boolean;
+      score?: number;
       description: string;
     };
     psi: {
@@ -19,18 +20,21 @@ export interface DriftData {
       score: number;
       status: string;
       drift: boolean;
+      scaled_score?: number;
       description: string;
     };
     wasserstein: {
       name: string;
       distance: number;
       drift: boolean;
+      score?: number;
       description: string;
     };
     z_score: {
       name: string;
       score: number;
       drift: boolean;
+      scaled_score?: number;
       description: string;
     };
   };
@@ -40,6 +44,19 @@ export interface DriftData {
     current_avg: number;
     drift: boolean;
   }>;
+  debug?: {
+    psi_contribution: number;
+    ks_contribution: number;
+    wasserstein_contribution: number;
+    z_score_contribution: number;
+    psi_raw: number;
+    ks_raw_d: number;
+    wasserstein_raw_w: number;
+    z_score_raw_z: number;
+    formula_explanation: string;
+    baseline_sample_count: number;
+    current_sample_count: number;
+  };
 }
 
 export function useSocket() {

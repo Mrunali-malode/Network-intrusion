@@ -18,6 +18,8 @@ import {
   Cpu,
   RefreshCcw,
   Info,
+  Server,
+  Zap,
 } from "lucide-react";
 
 function StatCard({
@@ -44,14 +46,14 @@ function StatCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 p-5 backdrop-blur-xl transition-all hover:border-slate-700 shadow-lg group">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/70 p-5 backdrop-blur-xl transition-all hover:border-slate-700 shadow-xl group">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase flex items-center gap-1.5">
+        <span className="text-xs font-bold text-slate-400 tracking-wider uppercase flex items-center gap-1.5 font-mono">
           {title}
           {onInfoClick && (
             <button
               onClick={onInfoClick}
-              className="text-slate-400 hover:text-cyan-400 transition-all"
+              className="text-slate-500 hover:text-cyan-400 transition-all"
               title={`Learn more about ${title}`}
             >
               <Info className="h-3.5 w-3.5" />
@@ -64,7 +66,7 @@ function StatCard({
       </div>
 
       <div className="mt-3 flex items-baseline gap-2">
-        <h2 className="text-3xl font-extrabold text-white tracking-tight font-mono">
+        <h2 className="text-3xl font-black text-white tracking-tight font-mono">
           {value}
         </h2>
       </div>
@@ -92,7 +94,6 @@ export default function Home() {
   const [filterMethod, setFilterMethod] = useState("ALL");
   const [modalContent, setModalContent] = useState<ModalInfoContent | null>(null);
 
-  // Stat Card Info Popups
   const statModalInfos: Record<string, ModalInfoContent> = {
     rps: {
       title: "Requests Per Second (RPS)",
@@ -143,11 +144,11 @@ export default function Home() {
       badge: drift.status,
       badgeColor: drift.status === "CRITICAL" ? "rose" : drift.status === "WARNING" ? "amber" : "emerald",
       summary:
-        "Composite risk evaluation combining 4 statistical hypothesis tests (KS-Test, PSI, Wasserstein Distance, Z-Score) to flag when live traffic deviates from normal behavior.",
+        "Composite risk evaluation combining 4 calibrated statistical hypothesis tests (KS-Test, PSI, Wasserstein Distance, Z-Score) to flag when live traffic deviates from normal behavior.",
       keyPoints: [
-        "NORMAL: Composite score < 25%. Baseline distribution is stable.",
-        "WARNING: Composite score between 25% - 50%. Moderate statistical shift.",
-        "CRITICAL: Composite score >= 50%. Significant concept drift / cyber attack detected."
+        "NORMAL: Composite score 0 - 20%. Baseline distribution is stable.",
+        "WARNING: Composite score 20 - 60%. Moderate statistical shift.",
+        "CRITICAL: Composite score 60 - 100%. Significant concept drift / cyber attack detected."
       ],
       howToTest: "Trigger 'Volumetric Botnet Attack' to watch the alert transition to CRITICAL!"
     },
@@ -157,7 +158,7 @@ export default function Home() {
       badge: "Real-Time Table",
       badgeColor: "cyan",
       summary:
-        "This table displays individual HTTP requests captured live from demo web middleware and synthetic attack tools.",
+        "Displays individual HTTP requests captured live from demo web middleware and synthetic attack tools.",
       keyPoints: [
         "HTTP Method Filter: Filter table by GET, POST, PUT, or DELETE requests.",
         "Search Filter: Type any IP address or path fragment (e.g. '/admin') to isolate suspicious requests.",
@@ -167,7 +168,6 @@ export default function Home() {
     }
   };
 
-  // Filter events based on search and method
   const filteredEvents = events.filter((ev) => {
     const matchesSearch =
       ev.ip.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -181,53 +181,61 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
+    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-slate-950 font-sans">
       <Navbar connected={connected} totalRequests={totalRequests} />
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        {/* Banner Title */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-800/80 pb-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-400 border border-cyan-500/30">
-                <Radio className="h-3.5 w-3.5 animate-pulse" />
-                ACTIVE SOC SENTINEL MONITOR
-              </span>
-            </div>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Network Intrusion & Concept Drift Intelligence
-            </h1>
-            <p className="mt-1 text-sm text-slate-400 max-w-3xl">
-              Stream middleware HTTP telemetry, compute statistical hypothesis shifts (KS-Test, PSI, EMD, Z-Score), and simulate fake IP attack traffic in real time.
-            </p>
-          </div>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-8">
+        {/* Hero Section Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 p-6 md:p-8 shadow-2xl">
+          <div className="absolute top-0 right-0 -mt-8 -mr-8 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => triggerSimulation("normal", 30, 0.1)}
-              className="flex items-center gap-2 rounded-xl bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 hover:bg-slate-800 transition-all shadow-md"
-            >
-              <RefreshCcw className="h-4 w-4 text-cyan-400" />
-              Quick Telemetry Pulse
-            </button>
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between relative z-10">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-400 border border-cyan-500/30 font-mono">
+                  <Radio className="h-3.5 w-3.5 animate-pulse text-cyan-400" />
+                  LIVE SOC MONITORING SYSTEM ACTIVE
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-bold text-purple-400 border border-purple-500/30 font-mono">
+                  <Zap className="h-3 w-3" /> FASTAPI ML PIPELINE
+                </span>
+              </div>
+
+              <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
+                Network Intrusion <span className="text-cyan-400">Sentinel</span>
+              </h1>
+              <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
+                Enterprise real-time HTTP telemetry streaming platform powered by multi-technique concept drift analysis (Laplace PSI, 2-Sample KS-Test, Earth Mover's Distance, and 3-Sigma Z-Score).
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => triggerSimulation("normal", 30, 0.1)}
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-5 py-3 text-xs font-black text-slate-950 hover:brightness-110 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-wider"
+              >
+                <RefreshCcw className="h-4 w-4 text-slate-950" />
+                Quick Telemetry Pulse
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Top Metric Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        {/* Top Enterprise Metric Cards */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Requests / Sec (RPS)"
             value={rps}
-            subtitle={rps > 20 ? "⚠️ Surge Volume Detected" : "Normal Throughput"}
+            subtitle={rps > 20 ? "⚠️ High Traffic Surge" : "Normal Velocity"}
             icon={Activity}
             accentColor={rps > 20 ? "amber" : "cyan"}
             onInfoClick={() => setModalContent(statModalInfos.rps)}
           />
 
           <StatCard
-            title="Total Telemetry Events"
+            title="Total Ingested Events"
             value={totalRequests.toLocaleString()}
-            subtitle="Ingested via Next.js Middleware"
+            subtitle="Captured via Next.js Middleware"
             icon={Cpu}
             accentColor="purple"
             onInfoClick={() => setModalContent(statModalInfos.totalEvents)}
@@ -252,8 +260,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Section 1: Multi-Technique Concept Drift Engine & Simulator */}
-        <div className="grid gap-8 lg:grid-cols-12 mb-8">
+        {/* Section 1: Concept Drift Engine Sentinel & Traffic Control Panel */}
+        <div className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <DriftCard drift={drift} />
           </div>
@@ -263,15 +271,15 @@ export default function Home() {
         </div>
 
         {/* Section 2: Real-time Recharts Timeline */}
-        <div className="mb-8">
+        <div>
           <RealtimeChart data={historyData} />
         </div>
 
-        {/* Section 3: Live Telemetry & Threat Feed */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-xl shadow-xl">
+        {/* Section 3: Live Telemetry & Threat Log Stream Table */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur-xl shadow-xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 pb-4 mb-4">
             <div>
-              <h2 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+              <h2 className="text-lg font-bold text-white tracking-wide flex items-center gap-2 font-sans">
                 Live HTTP Telemetry & Threat Log Stream
                 <button
                   onClick={() => setModalContent(statModalInfos.liveFeed)}
@@ -282,13 +290,12 @@ export default function Home() {
                 </button>
               </h2>
               <p className="text-xs text-slate-400">
-                Real-time ingested HTTP requests from demo middleware and synthetic fake IP injectors
+                Real-time HTTP request log ingestion stream from demo web middleware and synthetic threat injectors
               </p>
             </div>
 
             {/* Filter Controls */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Method Filter */}
               <div className="flex items-center rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs font-semibold">
                 {["ALL", "GET", "POST", "PUT", "DELETE"].map((m) => (
                   <button
@@ -305,7 +312,6 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Search Bar */}
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
                 <input
@@ -313,7 +319,7 @@ export default function Home() {
                   placeholder="Filter IP or Path..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-lg bg-slate-950 border border-slate-800 pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none w-48"
+                  className="rounded-lg bg-slate-950 border border-slate-800 pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none w-48 font-mono"
                 />
               </div>
             </div>
@@ -322,14 +328,14 @@ export default function Home() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="border-b border-slate-800 bg-slate-950/60 font-semibold uppercase tracking-wider text-slate-400 text-[11px]">
+              <thead className="border-b border-slate-800 bg-slate-950/80 font-semibold uppercase tracking-wider text-slate-400 text-[11px] font-mono">
                 <tr>
                   <th className="py-3 px-4">Time</th>
                   <th className="py-3 px-4">Method</th>
-                  <th className="py-3 px-4">IP Address</th>
+                  <th className="py-3 px-4">Client IP</th>
                   <th className="py-3 px-4">Request Path</th>
-                  <th className="py-3 px-4">Payload (Bytes)</th>
-                  <th className="py-3 px-4">Threat Risk</th>
+                  <th className="py-3 px-4">Payload Size</th>
+                  <th className="py-3 px-4">Threat Risk Tag</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-mono">
@@ -380,14 +386,14 @@ export default function Home() {
                             {ev.ip}
                           </span>
                           {isAttackerIp && (
-                            <span className="ml-2 rounded bg-rose-500/20 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
+                            <span className="ml-2 rounded bg-rose-500/20 px-1.5 py-0.5 text-[9px] font-bold text-rose-300 border border-rose-500/30">
                               BOTNET / TOR
                             </span>
                           )}
                         </td>
 
                         <td className="py-3 px-4 text-slate-300">
-                          <span className={isAttackPath ? "text-amber-300 font-bold" : ""} >
+                          <span className={isAttackPath ? "text-amber-300 font-bold" : ""}>
                             {ev.path}
                           </span>
                         </td>
