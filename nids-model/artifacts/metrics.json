@@ -1,0 +1,128 @@
+{
+  "dataset": "NSL-KDD (KDDTrain+ / KDDTest+)",
+  "model": "RandomForestClassifier(n_estimators=200, class_weight=balanced_subsample)",
+  "classes": [
+    "Normal",
+    "DoS",
+    "Probe",
+    "R2L",
+    "U2R",
+    "attack1"
+  ],
+  "test_accuracy": 0.7352,
+  "test_macro_f1": 0.5611,
+  "per_class": {
+    "Normal": {
+      "precision": 0.6347755979575384,
+      "recall": 0.9729173102667078,
+      "f1-score": 0.7682862370400488,
+      "support": 9711.0
+    },
+    "DoS": {
+      "precision": 0.9609507640067911,
+      "recall": 0.7587131367292225,
+      "f1-score": 0.847940074906367,
+      "support": 7460.0
+    },
+    "Probe": {
+      "precision": 0.8191671420422133,
+      "recall": 0.5931433292028088,
+      "f1-score": 0.6880689985625299,
+      "support": 2421.0
+    },
+    "R2L": {
+      "precision": 0.6923076923076923,
+      "recall": 0.003119584055459272,
+      "f1-score": 0.006211180124223602,
+      "support": 2885.0
+    },
+    "U2R": {
+      "precision": 0.5,
+      "recall": 0.029850746268656716,
+      "f1-score": 0.056338028169014086,
+      "support": 67.0
+    },
+    "attack1": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 69.0
+    },
+    "macro avg": {
+      "precision": 0.7678668660523725,
+      "recall": 0.5596240177538092,
+      "f1-score": 0.5611407531336973,
+      "support": 22613.0
+    },
+    "weighted avg": {
+      "precision": 0.7701768838477073,
+      "recall": 0.7351523459956663,
+      "f1-score": 0.6873466393120331,
+      "support": 22613.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "Normal",
+      "DoS",
+      "Probe",
+      "R2L",
+      "U2R",
+      "attack1"
+    ],
+    "matrix": [
+      [
+        9448,
+        67,
+        195,
+        0,
+        1,
+        0
+      ],
+      [
+        1682,
+        5660,
+        118,
+        0,
+        0,
+        0
+      ],
+      [
+        822,
+        163,
+        1436,
+        0,
+        0,
+        0
+      ],
+      [
+        2871,
+        0,
+        4,
+        9,
+        1,
+        0
+      ],
+      [
+        61,
+        0,
+        0,
+        4,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        69
+      ]
+    ]
+  },
+  "train_rows": 126132,
+  "test_rows": 22613,
+  "sklearn_version": "1.9.1",
+  "trained_at": "2026-09-25T12:29:27"
+}

@@ -3,11 +3,12 @@
 import Navbar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import RealtimeChart from "@/components/RealtimeChart";
+import ThreatClassificationCard from "@/components/ThreatClassificationCard";
 import { useSocket } from "@/hooks/useSocket";
 import { Radio, Activity, Zap, Server, Shield } from "lucide-react";
 
 export default function MonitoringPage() {
-  const { rps, totalRequests, uniqueIps, connected, drift, historyData } = useSocket();
+  const { rps, totalRequests, uniqueIps, connected, drift, detection, threatSummary, historyData } = useSocket();
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
@@ -41,17 +42,25 @@ export default function MonitoringPage() {
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 backdrop-blur-xl font-mono">
             <div className="text-xs text-slate-400 uppercase font-sans font-bold">Total Telemetry Counter</div>
             <div className="text-3xl font-black text-purple-400 mt-2">{totalRequests.toLocaleString()}</div>
-            <div className="text-xs text-slate-400 mt-1">Middleware Events Ingested</div>
+            <div className="text-xs text-slate-400 mt-1">Proxy Sensor Events Ingested</div>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 backdrop-blur-xl font-mono">
-            <div className="text-xs text-slate-400 uppercase font-sans font-bold">Concept Drift Alert Status</div>
-            <div className={`text-3xl font-black mt-2 ${drift.status === "CRITICAL" ? "text-rose-400" : drift.status === "WARNING" ? "text-amber-400" : "text-emerald-400"}`}>
-              {drift.status}
+            <div className="text-xs text-slate-400 uppercase font-sans font-bold">NIDS Model Verdict</div>
+            <div className={`text-3xl font-black mt-2 ${
+              detection && detection.label !== "Normal" && detection.label !== "Unknown"
+                ? "text-rose-400"
+                : "text-emerald-400"
+            }`}>
+              {detection?.label ?? "—"}
             </div>
-            <div className="text-xs text-slate-400 mt-1">Score: {drift.overall_drift_score.toFixed(1)}%</div>
+            <div className="text-xs text-slate-400 mt-1">
+              {threatSummary.dominant_attack ? `Dominant: ${threatSummary.dominant_attack}` : "No active threat"}
+            </div>
           </div>
         </div>
+
+        <ThreatClassificationCard detection={detection} threatSummary={threatSummary} />
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 backdrop-blur-xl">
           <RealtimeChart data={historyData} />

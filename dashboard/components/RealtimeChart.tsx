@@ -42,7 +42,7 @@ export default function RealtimeChart({ data }: RealtimeChartProps) {
       normal: "Cyan curve stays below 20 RPS and Rose curve stays below 25%.",
       anomaly: "Cyan curve spikes sharply above 20 RPS or Rose drift curve climbs towards 100%."
     },
-    howToTest: "Trigger a simulation or refresh pages on the Netflix clone app to see the real-time cyan throughput wave update in live time!"
+    howToTest: "Browse http://localhost:8080 or run an attack script to see the throughput update live."
   };
 
   return (

@@ -1,37 +1,44 @@
+"""Normal traffic: legitimate browsing of the netflix-clone via the proxy.
+
+Signature -> model class: Normal
+"""
+
 import random
 import time
+
 import requests
 
 from config import (
-    TARGET_URL,
-    REQUEST_TIMEOUT,
-    NORMAL_MIN_DELAY,
+    NORMAL_IPS,
     NORMAL_MAX_DELAY,
+    NORMAL_MIN_DELAY,
+    REQUEST_TIMEOUT,
+    TARGET_URL,
 )
 
-FAKE_IPS = [
-    "198.51.100.14", "198.51.100.22", "203.0.113.88",
-    "192.168.1.105", "172.16.0.42", "72.14.192.1"
+PATHS = ["/", "/browse", "/movies", "/latest", "/my-list"]
+BROWSER_UAS = [
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
 ]
 
-PATHS = ["/", "/browse", "/movies", "/latest", "/my-list"]
 
-print(f"Starting normal traffic simulation with fake IPs against {TARGET_URL}")
+def run():
+    print(f"[normal] legitimate browsing against {TARGET_URL}")
+    while True:
+        try:
+            headers = {
+                "X-Forwarded-For": random.choice(NORMAL_IPS),
+                "User-Agent": random.choice(BROWSER_UAS),
+            }
+            path = random.choice(PATHS)
+            requests.get(f"{TARGET_URL}{path}", headers=headers, timeout=REQUEST_TIMEOUT)
+            print(f"[normal] GET {path}")
+        except Exception as e:
+            print(f"[normal] request failed: {e}")
+        time.sleep(random.uniform(NORMAL_MIN_DELAY, NORMAL_MAX_DELAY))
 
-while True:
-    try:
-        ip = random.choice(FAKE_IPS)
-        path = random.choice(PATHS)
-        headers = {"X-Forwarded-For": ip}
-        url = f"{TARGET_URL.rstrip('/')}{path}"
-        requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
-        print(f"[NORMAL] Request sent to {path} from IP={ip}")
-    except Exception as e:
-        print(f"Request failed: {e}")
 
-    time.sleep(
-        random.uniform(
-            NORMAL_MIN_DELAY,
-            NORMAL_MAX_DELAY,
-        )
-    )
+if __name__ == "__main__":
+    run()

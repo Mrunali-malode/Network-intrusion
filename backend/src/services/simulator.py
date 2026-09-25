@@ -6,6 +6,8 @@ from typing import Optional, Dict, Any, List
 from src.models.traffic import TrafficEvent
 from src.storage.memory import traffic_events, simulation_state
 from src.websocket.manager import manager
+from src.services import nids_engine
+from src.services.drift_engine import get_cached_drift
 
 
 NORMAL_IPS = [
@@ -123,6 +125,11 @@ async def start_simulation_task(
             traffic_events.append(event)
             simulation_state["requests_sent"] += 1
 
+            # Run the simulated event through the NIDS model too, so the
+            # dashboard buttons demonstrate live classification.
+            detection = nids_engine.classify(nids_engine.features_from_event(event))
+            nids_engine.record_detection(detection, {"src_ip": event.ip, "path": event.path})
+
             # Broadcast over WebSocket
             await manager.broadcast({
                 "type": "traffic",
@@ -131,7 +138,11 @@ async def start_simulation_task(
                 "method": event.method,
                 "ip": event.ip,
                 "content_length": event.content_length,
+                "path_depth": event.path_depth,
                 "user_agent": event.user_agent,
+                "detection": detection,
+                "threat_summary": nids_engine.threat_summary(),
+                "drift": get_cached_drift(),
             })
 
             # Calculate dynamic delay based on mode

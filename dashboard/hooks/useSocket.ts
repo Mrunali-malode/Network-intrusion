@@ -59,6 +59,45 @@ export interface DriftData {
   };
 }
 
+export type AttackClass = "Normal" | "DoS" | "Probe" | "R2L" | "U2R" | "Unknown";
+
+export interface Detection {
+  label: AttackClass;
+  confidence: number;
+  probabilities: Record<string, number>;
+  description: string;
+  model_loaded?: boolean;
+  uncertain?: boolean;
+  novel?: boolean;
+  source?: "model" | "signature";
+  model_label?: AttackClass;
+  model_confidence?: number;
+  signature?: {
+    matched: boolean;
+    label?: AttackClass;
+    confidence?: number;
+    reason?: string;
+  };
+}
+
+export interface ThreatSummary {
+  window_size: number;
+  attack_count: number;
+  attack_ratio: number;
+  dominant_attack: AttackClass | null;
+  class_counts: Record<string, number>;
+  top_attacker_ips: Array<{ ip: string; count: number }>;
+}
+
+const EMPTY_THREAT: ThreatSummary = {
+  window_size: 0,
+  attack_count: 0,
+  attack_ratio: 0,
+  dominant_attack: null,
+  class_counts: { Normal: 0, DoS: 0, Probe: 0, R2L: 0, U2R: 0 },
+  top_attacker_ips: [],
+};
+
 export function useSocket() {
   const [events, setEvents] = useState<any[]>([]);
   const [rps, setRps] = useState(0);
@@ -66,6 +105,8 @@ export function useSocket() {
   const [uniqueIps, setUniqueIps] = useState(0);
   const [connected, setConnected] = useState(false);
   const [historyData, setHistoryData] = useState<any[]>([]);
+  const [detection, setDetection] = useState<Detection | null>(null);
+  const [threatSummary, setThreatSummary] = useState<ThreatSummary>(EMPTY_THREAT);
   
   const [drift, setDrift] = useState<DriftData>({
     status: "NORMAL",
@@ -133,6 +174,13 @@ export function useSocket() {
               setDrift(data.drift);
             }
 
+            if (data.detection) {
+              setDetection(data.detection);
+            }
+            if (data.threat_summary) {
+              setThreatSummary(data.threat_summary);
+            }
+
             const formattedEvent = {
               id: Math.random().toString(36).substring(2, 9),
               time: new Date(data.timestamp || Date.now()).toLocaleTimeString(),
@@ -141,6 +189,8 @@ export function useSocket() {
               ip: data.ip,
               content_length: data.content_length || 0,
               user_agent: data.user_agent || "Unknown",
+              status: data.status ?? null,
+              detection: data.detection || null,
             };
 
             setEvents((prev) => [formattedEvent, ...prev].slice(0, 30));
@@ -190,32 +240,6 @@ export function useSocket() {
     };
   }, [fetchInitialMetrics, drift.overall_drift_score]);
 
-  const triggerSimulation = async (
-    mode: string,
-    count: number = 50,
-    delay: number = 0.1,
-    customIp?: string,
-    customPath?: string
-  ) => {
-    try {
-      const res = await fetch("http://localhost:8000/simulate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode,
-          count,
-          delay,
-          custom_ip: customIp || null,
-          custom_path: customPath || null,
-        }),
-      });
-      return await res.json();
-    } catch (err) {
-      console.error("Failed to trigger simulation:", err);
-      return { status: "error", message: String(err) };
-    }
-  };
-
   return {
     events,
     rps,
@@ -223,7 +247,8 @@ export function useSocket() {
     uniqueIps,
     connected,
     drift,
+    detection,
+    threatSummary,
     historyData,
-    triggerSimulation,
   };
 }

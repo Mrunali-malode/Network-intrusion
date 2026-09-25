@@ -1,4 +1,5 @@
 import math
+import time
 import numpy as np
 from typing import List, Dict, Any
 from collections import Counter
@@ -340,3 +341,19 @@ def calculate_drift_metrics() -> Dict[str, Any]:
             "current_sample_count": len(current_sample)
         }
     }
+
+
+# --- cached drift ---------------------------------------------------------
+# calculate_drift_metrics() is a few ms, but under sustained traffic we don't
+# need to recompute it on every single ingested request. Cache it briefly so
+# high-rate ingestion stays cheap.
+_drift_cache: Dict[str, Any] = {"data": None, "ts": 0.0}
+_DRIFT_TTL_SEC = 0.5
+
+
+def get_cached_drift() -> Dict[str, Any]:
+    now = time.time()
+    if _drift_cache["data"] is None or (now - _drift_cache["ts"]) > _DRIFT_TTL_SEC:
+        _drift_cache["data"] = calculate_drift_metrics()
+        _drift_cache["ts"] = now
+    return _drift_cache["data"]

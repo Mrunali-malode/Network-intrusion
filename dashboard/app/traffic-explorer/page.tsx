@@ -203,7 +203,16 @@ export default function TrafficExplorerPage() {
                         </td>
 
                         <td className="py-3.5 px-4">
-                          {isAttackerIp || isAttackPath ? (
+                          {ev.detection && ev.detection.label !== "Normal" && ev.detection.label !== "Unknown" ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-400">
+                              <ShieldAlert className="h-3 w-3" /> {ev.detection.label}
+                              <span className="text-slate-500 font-normal">({(ev.detection.confidence * 100).toFixed(0)}%)</span>
+                            </span>
+                          ) : ev.detection && ev.detection.label === "Normal" ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+                              <ShieldCheck className="h-3 w-3" /> NORMAL
+                            </span>
+                          ) : isAttackerIp || isAttackPath ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-400">
                               <ShieldAlert className="h-3 w-3" /> ANOMALY
                             </span>

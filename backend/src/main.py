@@ -7,6 +7,8 @@ from src.routes.traffic import router as traffic_router
 from src.routes.websocket import router as websocket_router
 from src.routes.drift import router as drift_router
 from src.routes.simulation import router as simulation_router
+from src.routes.ingest import router as ingest_router
+from src.routes.learning import router as learning_router
 
 app = FastAPI(
     title="Network Intrusion & Concept Drift Sentinel API",
@@ -30,3 +32,5 @@ app.include_router(traffic_router)
 app.include_router(websocket_router)
 app.include_router(drift_router)
 app.include_router(simulation_router)
+app.include_router(ingest_router)
+app.include_router(learning_router)

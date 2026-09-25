@@ -33,7 +33,7 @@ export default function DriftCard({ drift }: DriftCardProps) {
                   </span>
                 </div>
                 <p className="text-xs text-rose-200/80 mt-0.5">
-                  High probability cyber attack or major statistical traffic divergence detected. Immediate SOC mitigation required.
+                  High probability cyber attack or major statistical traffic divergence detected.
                 </p>
               </div>
             </div>
@@ -102,7 +102,7 @@ export default function DriftCard({ drift }: DriftCardProps) {
 
   const modalInfos: Record<string, ModalInfoContent> = {
     overall: {
-      title: "Network Intrusion Concept Drift Sentinel",
+      title: "Concept Drift Engine",
       category: "ML Concept Drift Engine",
       badge: status,
       badgeColor: status === "CRITICAL" ? "rose" : status === "WARNING" ? "amber" : "emerald",
@@ -118,7 +118,7 @@ export default function DriftCard({ drift }: DriftCardProps) {
         normal: "Score 0 - 20%. Standard browsing behavior across typical endpoints.",
         anomaly: "Score 20 - 60% (WARNING) or 60 - 100% (CRITICAL). Automated attack tools, scrapers, or DDoS botnets."
       },
-      howToTest: "Trigger 'Volumetric Botnet Attack' in the Traffic Simulator to observe real-time score escalation!"
+      howToTest: "Run `python main.py flood` from the attack-script to watch the score rise."
     },
     ks_test: {
       title: "Kolmogorov-Smirnov Test (KS-Test)",
@@ -132,7 +132,7 @@ export default function DriftCard({ drift }: DriftCardProps) {
         "D-statistic: Maximum vertical distance between cumulative probability curves.",
         "p-value: Probability that observed distribution difference occurred by random chance."
       ],
-      howToTest: "Run a spike attack to shift payload content length or query parameter distributions."
+      howToTest: "Run `python main.py flood` to shift the traffic distribution."
     },
     psi: {
       title: "Population Stability Index (PSI)",
@@ -147,7 +147,7 @@ export default function DriftCard({ drift }: DriftCardProps) {
         "0.10 <= PSI < 0.25: Moderate population shift (15-60 score).",
         "PSI >= 0.25: Severe distribution drift (60-100 score)."
       ],
-      howToTest: "Inject custom requests with malicious paths like '/admin/config.json' to trigger PSI shift."
+      howToTest: "Run `python main.py recon` to send scanning paths and trigger a PSI shift."
     },
     wasserstein: {
       title: "Wasserstein Distance (Earth Mover's Distance)",
@@ -186,11 +186,11 @@ export default function DriftCard({ drift }: DriftCardProps) {
             <div className="flex items-center gap-2">
               <Gauge className="h-5 w-5 text-cyan-400" />
               <h2 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-                Statistical Concept Drift Sentinel
+                Concept Drift (secondary signal)
                 <button
                   onClick={() => setActiveModalContent(modalInfos.overall)}
                   className="rounded-full p-1 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 transition-all"
-                  title="Learn about Concept Drift Sentinel"
+                  title="Learn about the concept drift engine"
                 >
                   <Info className="h-4 w-4" />
                 </button>
