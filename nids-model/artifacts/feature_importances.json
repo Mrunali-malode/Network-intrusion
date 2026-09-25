@@ -1,62 +1,62 @@
 [
   {
     "feature": "src_bytes",
-    "importance": 0.07655
-  },
-  {
-    "feature": "dst_bytes",
-    "importance": 0.07238
+    "importance": 0.08568
   },
   {
     "feature": "dst_host_srv_count",
-    "importance": 0.05506
+    "importance": 0.07147
   },
   {
-    "feature": "dst_host_diff_srv_rate",
-    "importance": 0.05062
-  },
-  {
-    "feature": "service_http",
-    "importance": 0.04884
+    "feature": "dst_bytes",
+    "importance": 0.07017
   },
   {
     "feature": "logged_in",
-    "importance": 0.04232
-  },
-  {
-    "feature": "dst_host_rerror_rate",
-    "importance": 0.03953
-  },
-  {
-    "feature": "duration",
-    "importance": 0.03223
+    "importance": 0.04737
   },
   {
     "feature": "dst_host_same_src_port_rate",
-    "importance": 0.03104
+    "importance": 0.03938
   },
   {
-    "feature": "count",
-    "importance": 0.03104
+    "feature": "dst_host_diff_srv_rate",
+    "importance": 0.03908
   },
   {
     "feature": "dst_host_serror_rate",
-    "importance": 0.02987
+    "importance": 0.03666
   },
   {
-    "feature": "dst_host_count",
-    "importance": 0.02963
+    "feature": "service_telnet",
+    "importance": 0.03535
   },
   {
     "feature": "srv_count",
-    "importance": 0.0296
+    "importance": 0.03452
+  },
+  {
+    "feature": "count",
+    "importance": 0.03348
+  },
+  {
+    "feature": "flag_S0",
+    "importance": 0.02877
+  },
+  {
+    "feature": "service_http",
+    "importance": 0.02695
+  },
+  {
+    "feature": "dst_host_count",
+    "importance": 0.02662
   },
   {
     "feature": "dst_host_same_srv_rate",
-    "importance": 0.02699
+    "importance": 0.02546
   },
   {
     "feature": "dst_host_srv_diff_host_rate",
-    "importance": 0.02574
+    "importance": 0.02422
   }
 ]
